@@ -94,6 +94,7 @@ if (accessoryFile) {
     if (!m) return null
     if (copy.has(m)) return copy.get(m)
     const c = doc.createMaterial(m.getName()).setBaseColorFactor(m.getBaseColorFactor()).setMetallicFactor(m.getMetallicFactor()).setRoughnessFactor(m.getRoughnessFactor()).setEmissiveFactor(m.getEmissiveFactor())
+      .setAlphaMode(m.getAlphaMode()).setDoubleSided(m.getDoubleSided())
     const t = m.getBaseColorTexture()
     if (t) c.setBaseColorTexture(doc.createTexture(t.getName()).setImage(t.getImage()).setMimeType(t.getMimeType()))
     copy.set(m, c)
@@ -113,7 +114,12 @@ if (accessoryFile) {
       if (ix) { np.setIndices(acc('SCALAR', ix.getArray().slice())); accTris += ix.getCount() / 3 } else accTris += ap.getAttribute('POSITION').getCount() / 3
       out.addPrimitive(np)
     }
-    holder.addChild(doc.createNode(n.getName() || 'part').setMesh(out).setMatrix(n.getWorldMatrix()))
+    // parts under wear_head / wear_back / wear_body keep that group: the game hangs each group on its own bone
+    let g = n, wear = null
+    while (g && !wear) { if (/^wear_(head|back|body)/.test(g.getName())) wear = g.getName(); g = g.getParentNode() }
+    let parent = holder
+    if (wear) parent = holder.listChildren().find(c => c.getName() === wear) || holder.addChild(doc.createNode(wear)).listChildren().find(c => c.getName() === wear)
+    parent.addChild(doc.createNode(n.getName() || 'part').setMesh(out).setMatrix(n.getWorldMatrix()))
   }
 }
 fs.mkdirSync(path.dirname(path.resolve(outFile)), { recursive: true })
