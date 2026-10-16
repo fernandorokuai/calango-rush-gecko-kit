@@ -1,0 +1,16 @@
+{
+  "name": "calango-rush-gecko-kit",
+  "version": "1.0.0",
+  "description": "Make your own gecko for Calango Rush (Project 0, lot 27)",
+  "scripts": {
+    "make": "node make_gecko.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "SEE LICENSE IN README.md",
+  "type": "module",
+  "dependencies": {
+    "@gltf-transform/core": "^4.5.1",
+    "jpeg-js": "^0.4.4"
+  }
+}
